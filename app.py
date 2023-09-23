@@ -1,7 +1,35 @@
 from flask import Flask, request, jsonify
 from utility.data import dummy_data
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+class Teacher(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    surname = db.Column(db.String(200), nullable=False)
+    faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'), nullable=False)
+
+    def __repr__(self):
+        return '<Teacher {} {}>'.format(self.name, self.surname)
+
+
+class Faculty(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    teachers = db.relationship('Teacher', backref='Faculty', lazy=True)
+
+    def __repr__(self):
+        return '<Faculty {}>'.format(self.name)
+
+#see hateoas_api.py
+from hateoas_api import hateoas
+app.register_blueprint(hateoas)
+
 
 @app.route("/filter")
 def filter_data():
@@ -76,3 +104,6 @@ def api():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
+
+
