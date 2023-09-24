@@ -1,13 +1,19 @@
 from flask import Flask
+from resources.modules.routes import modules_blueprint
+from resources.courses.routes import courses_blueprint
+from resources.comments.routes import comments_blueprint
+from resources.faculties.routes import faculties_blueprint
+from resources.departments.routes import departments_blueprint
+from resources.staffs.routes import staffs_blueprint
 
-# Create a Flask application instance
 app = Flask(__name__)
 
-# Define a route to handle the root URL ("/") and return "Hello, World!"
-@app.route("/")
-def hello_world():
-    return "Hello, World!"
+app.register_blueprint(modules_blueprint)
+app.register_blueprint(courses_blueprint)
+app.register_blueprint(comments_blueprint)
+app.register_blueprint(faculties_blueprint)
+app.register_blueprint(departments_blueprint)
+app.register_blueprint(staffs_blueprint)
 
-if __name__ == "__main__":
-    # Run the Flask app on localhost (127.0.0.1) and port 5000
-    app.run(host="0.0.0.0", port=5000)
+if __name__ == '__main__':
+    app.run(debug=True)
